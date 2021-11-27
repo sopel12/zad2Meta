@@ -79,6 +79,10 @@ public class Population {
         interbreeding();//[10]
         mutation();//[11]
         fit();//[12]
+        // TODO: 27.11.2021 prio:1 powtarzanie generacji
+        // TODO: 27.11.2021 prio:1 dodac stop do generacji
+        // TODO: 27.11.2021 prio:2 zapisywanie do pliku wyniku
+
     }
 
     //    [0]x
@@ -266,6 +270,35 @@ public class Population {
 //            System.out.println("-Mutate row: " + mutate_row[i] + " and bit: " + mutate_bit);
             population[mutate_row[i]-1][11] = Integer.toString(mutate_bit);
         }
+        String binNumber ;
+        int x;
+        char xchr;
+        char chr;
+        for (int i = 0; i < population_size; i++) {
+//            System.out.println(int2bin(population[i][10]));
+            binNumber = int2bin(population[i][10]);
+            if (population[i][11] != "") {
+//                System.out.println("char " + int2bin(population[i][10]).charAt(Integer.parseInt(population[i][11])) + " at " + Integer.parseInt(population[i][11]));
+//                System.out.println(population[i][11]);
+                x = Integer.parseInt(population[i][11]);
+                xchr = int2bin(population[i][10]).charAt(x) ;
+//                chr = (Integer.toString(Integer.parseInt(Character.toString(xchr))+1%2)).charAt(0);
+                if (xchr == '1'){
+                    chr = '0';
+                } else{
+                    chr = '1';
+                }
+//                System.out.println("x: " + x);
+//                System.out.println("char at x: " + xchr);
+//                System.out.println("new char: " + chr);
+//                binNumber.replace(binNumber.charAt(x), chr);
+                binNumber = replaceCharUsingCharArray(binNumber, chr, x);
+//                System.out.println(binNumber);
+                population[i][12] = Integer.toString(bin2int(binNumber));
+            } else {
+                population[i][12] = population[i][10];
+            }
+        }
     }
     //[12]
     private void fit(){
@@ -275,13 +308,19 @@ public class Population {
 
 
     // tools
+    public String replaceCharUsingCharArray(String str, char ch, int index) {
+        char[] chars = str.toCharArray();
+        chars[index] = ch;
+//        System.out.println("lenght of string " + chars.length);
+        return String.valueOf(chars);
+    }
 
     public void printPopulation(){
 
         DecimalFormat df = new DecimalFormat("0.0000");//df.format()
         df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 //        String format = "%3s%14s%5s%22s%22s%25s%25s%25s%12s%15s%15s%22s%23s%25s%22s%15s";
-        String format = "%3s%10s%11s%12s%15s%15s%12s%12s%12s%15s%15s%21s%23s%19s%18s%15s";
+        String format = "%3s%10s%11s%12s%15s%15s%12s%12s%12s%15s%15s%21s%23s%19s%18s%15s%15s";
         System.out.format(format
                 , "id"
                 , "gen[0]"
@@ -299,6 +338,7 @@ public class Population {
                 , "Nowa Pop. gen[10]"
                 , "Nowa Pop. x[10]"
                 , "Mutacja [11]"
+                , "after Mutacja [12]"
         );
         System.out.println();
         for (int i = 0; i < population.length-3; i++) {
@@ -320,6 +360,7 @@ public class Population {
                     , int2bin(population[i][10])
                     , df.format(Double.parseDouble(toX(population[i][10])))
                     , population[i][11]
+                    , int2bin(population[i][12])
             );
             System.out.println();
         }
@@ -343,6 +384,7 @@ public class Population {
                     , population[i][10]
                     , population[i][10]
                     , population[i][11]
+                    , population[i][12]
             );
             System.out.println();
         }

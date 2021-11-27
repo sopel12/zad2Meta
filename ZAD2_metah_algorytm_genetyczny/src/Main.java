@@ -7,11 +7,11 @@ public class Main {
 
     public static void main(String[] args) {
             Population pop = new Population(20,0.05,0.08,0,-1,0,0.01);
-        for (int i = 0; i < 10; i++) {
+//        for (int i = 0; i < 10; i++) {
 
             pop.runAG();
             pop.printPopulation();
-        }
+//        }
     }
 
 }
