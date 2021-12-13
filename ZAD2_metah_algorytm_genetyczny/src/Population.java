@@ -15,10 +15,15 @@ public class Population {
     int min;
     int max;
     String[][] population;
+    String[][] new_population;
     double mean;
     double sum;
     double max_value;
     int columns = 15;
+
+    //chart
+    double[][] chartData;
+
     /*
     [0]x
     [1]f(x)
@@ -41,8 +46,10 @@ public class Population {
         this.min = min;
         this.max = max;
         this.population = new String[population_size+3][columns];
+        this.new_population = new String[population_size][1];
         this.precision = precision;
         setGenSize();
+        this.chartData = new double[3][gen_size];
 
 //        population[population_size][1] = "sum";
 //        population[population_size+1][1] = "mean";
@@ -56,33 +63,59 @@ public class Population {
     }
 
     public void runAG(){
-        setEmptyPopulation();
+        runAG(1);
+    }
+    public void runAG(int generations){
+        for (int i = 1; i <= generations; i++) {
 
-        population[population_size][1] = "sum";
-        population[population_size+1][1] = "mean";
-        population[population_size+2][1] = "max";
+            for (int x = 0; x < population_size; x++) {
+                new_population[x][0] = population[x][12];
+            }
+            setEmptyPopulation();
 
-        population[population_size][8] = "sum";
-        population[population_size+1][8] = "mean";
-        population[population_size+2][8] = "max";
+            for (int j = 0; j < population_size; j++) {
+                population[j][0] = new_population[j][0];
+            }
 
-        generatePopulation();//[0]
-//        calculateFunction();//[1]
-        setCalculations(0,2);//[1]
-        calculateFi_Fmean();//[2]
-        calculateFi_Fsum();//[3]
-        rulletSelection();//[4]
-        calculateParents();//[5][6]
-        generatePartner();//[7]
-        generateMutationPoint();//[8]
-        interbreedingProbability();//[9]
-        interbreeding();//[10]
-        mutation();//[11]
-        fit();//[12]
-        // TODO: 27.11.2021 prio:1 powtarzanie generacji
-        // TODO: 27.11.2021 prio:1 dodac stop do generacji
-        // TODO: 27.11.2021 prio:2 zapisywanie do pliku wyniku
+            population[population_size][1] = "sum";
+            population[population_size+1][1] = "mean";
+            population[population_size+2][1] = "max";
 
+            population[population_size][8] = "sum";
+            population[population_size+1][8] = "mean";
+            population[population_size+2][8] = "max";
+
+//            System.out.println("old (0,12)"+ population[0][12]);
+//            System.out.println("new (0,0)"+ new_population[0][0]);
+//            System.out.println("reasigned (0,0)"+ population[0][0]);
+//            System.out.println("old (max,12)"+ population[population_size-1][12]);
+//            System.out.println("new (max,0)"+ new_population[population_size-1][0]);
+//            System.out.println("reasigned (max,0)"+ population[population_size-1][0]);
+            if(population[0][0]=="" || population[0][0]==null){
+//                System.out.println("(0,0)"+ population[0][0]);
+                generatePopulation();//[0]
+            }
+    //        calculateFunction();//[1]
+            setCalculations(0,2);//[1]
+            calculateFi_Fmean();//[2]
+            calculateFi_Fsum();//[3]
+            rulletSelection();//[4]
+            calculateParents();//[5][6]
+            generatePartner();//[7]
+            generateMutationPoint();//[8]
+            interbreedingProbability();//[9]
+            interbreeding();//[10]
+            mutation();//[11]
+            fit();//[12]
+            // TODO: 27.11.2021 prio:1 powtarzanie generacji
+            // TODO: 27.11.2021 prio:1 dodac stop do generacji
+            // TODO: 27.11.2021 prio:2 zapisywanie do pliku wyniku
+            printPopulation();
+
+            chartData[0][i-1] = Double.parseDouble(population[population_size][2]);  // sum
+            chartData[1][i-1] = Double.parseDouble(population[population_size+1][2]);// mean
+            chartData[2][i-1] = Double.parseDouble(population[population_size+2][2]);// max_value
+        }
     }
 
     //    [0]x
@@ -303,6 +336,7 @@ public class Population {
     //[12]
     private void fit(){
 
+
     }
 
 
@@ -320,7 +354,7 @@ public class Population {
         DecimalFormat df = new DecimalFormat("0.0000");//df.format()
         df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 //        String format = "%3s%14s%5s%22s%22s%25s%25s%25s%12s%15s%15s%22s%23s%25s%22s%15s";
-        String format = "%3s%10s%11s%12s%15s%15s%12s%12s%12s%15s%15s%21s%23s%19s%18s%15s%15s";
+        String format = "%3s%10s%11s%12s%15s%15s%12s%12s%12s%15s%15s%21s%23s%19s%18s%15s%15s%15s";
         System.out.format(format
                 , "id"
                 , "gen[0]"
@@ -339,6 +373,7 @@ public class Population {
                 , "Nowa Pop. x[10]"
                 , "Mutacja [11]"
                 , "after Mutacja [12]"
+                , "after Mutacja x[12]"
         );
         System.out.println();
         for (int i = 0; i < population.length-3; i++) {
@@ -361,7 +396,8 @@ public class Population {
                     , df.format(Double.parseDouble(toX(population[i][10])))
                     , population[i][11]
                     , int2bin(population[i][12])
-            );
+                    , df.format(Double.parseDouble(toX(population[i][12])))
+                    );
             System.out.println();
         }
 
@@ -384,6 +420,7 @@ public class Population {
                     , population[i][10]
                     , population[i][10]
                     , population[i][11]
+                    , population[i][12]
                     , population[i][12]
             );
             System.out.println();
@@ -508,8 +545,8 @@ public class Population {
     }
 
     private double function(double x){
-//        return x*x;
-        return x*x + x - 2.0;
+        return x*x;
+//        return x*x + x - 2.0;
 //        return x*x*Math.sin(15*Math.PI*x)+1;
     }
     private double function(int x){
@@ -596,6 +633,9 @@ public class Population {
 
     public int[] toIntArray(List<Integer> intList){
         return intList.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    public void plotChart(){
     }
 
 }
