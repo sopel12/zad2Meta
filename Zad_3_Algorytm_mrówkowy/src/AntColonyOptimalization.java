@@ -30,4 +30,12 @@ public class AntColonyOptimalization {
                 System.out.println("arr[" + i + "][" + j + "] = " + d[i][j]);
     }
 
+    public void pobierz_przebytą_droge(Ant mrówka) {
+//        niech total_distance równa się 0
+        double total_distance = 0.0;
+//        dla a z przedziału(1, długość mrówka.odwiedzone_atrakcje):
+//        total_distance += odległość między mrówka.odwiedzone_atrakcje[a-1]
+//        i mrówka.odwiedzone_atrakcje[a]
+//        zwróc total_distance
+    }
 }
