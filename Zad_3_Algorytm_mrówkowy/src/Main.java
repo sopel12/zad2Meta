@@ -13,7 +13,7 @@ public class Main {
             for (int j = 0; j < d[0].length; j++)
                 System.out.println("arr[" + i + "][" + j + "] = "
                         + d[i][j]);
-
+//asd
     }
 
 }
