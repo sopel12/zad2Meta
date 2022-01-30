@@ -23,6 +23,7 @@ public class Ant {
         }else{
             odwiedź_losową_atrakcję(liczba_atrakcji);
         }
+//        printArray(odwiedzone_atrakcje);
     }
 
     public void odwiedź_losową_atrakcję(int liczba_atrakcji){
@@ -44,15 +45,19 @@ public class Ant {
         dostepne_atrakcje = wszystkie_atrakcje;
         dostepne_atrakcje.removeAll(odwiedzone_atrakcje);//        niech dostępne_atrakcje równa się wszystkie_atrakcje – mrówka.odwiedzone_atrakcje
 //        ArrayList<Integer> uzywane_indeksy = null;//        niech używane_indeksy równa się pustej tablicy
-        uzywane_indeksy = null;//        niech używane_indeksy równa się pustej tablicy
-        ArrayList<Double> uzywane_prawdopodobienstwo = null;//        niech używane_prawdopodobieństwo równa się pustej tablicy
+        uzywane_indeksy = new ArrayList<>();//        niech używane_indeksy równa się pustej tablicy
+        ArrayList<Double> uzywane_prawdopodobienstwo = new ArrayList<>();//        niech używane_prawdopodobieństwo równa się pustej tablicy
         double suma_prawdopodobienstw = 0.0;//        niech suma_prawdopodobieństw równa się 0
         for (Integer atrakcja: dostepne_atrakcje) {//        dla atrakcja z dostępne_atrakcje:
-
             uzywane_indeksy.add(atrakcja);//        dodaj atrakcja do używane_indeksy
             double feromony_na_sciezce = Math.pow(slady_feromonowe[aktualna_atrakcja][atrakcja], alfa);//        niech feromony_na_ścieżce równa się bibl_mat.potęga(slady_feromonowe[aktualna_atrakcja][atrakcja], alfa)
+//            System.out.println("[aktualna_atrakcja][atrakcja] " + aktualna_atrakcja + " " + atrakcja);
+//            System.out.println("slady_feromonowe[aktualna_atrakcja][atrakcja] " + slady_feromonowe[aktualna_atrakcja][atrakcja]);
+//            System.out.println("feromony_na_sciezce " + feromony_na_sciezce);
             double heurystyka_dla_sciezki = Math.pow(1/d[aktualna_atrakcja][atrakcja], beta);//        niech heurystyka_dla_ścieżki równa się bibl_mat.potęga(1/odległość_między_atrakcjami[aktualna_atrakcja][atrakcja], beta)
+//            System.out.println("heurystyka_dla_sciezki " + heurystyka_dla_sciezki);
             double prawdopodobienstwo = feromony_na_sciezce * heurystyka_dla_sciezki;//        niech prawdopodobieństwo równa się feromony_na_ścieżce * hesurystyka_dla ścieżki
+//            System.out.println("prawdopodobienstwo " + prawdopodobienstwo);
             uzywane_prawdopodobienstwo.add(prawdopodobienstwo);//        dodaj prawdopodobieństwo do używane_prawdopodobieństwa
         }
         uzywane_prawdopodobienstwa(uzywane_prawdopodobienstwo);
@@ -110,7 +115,7 @@ public class Ant {
     }
 
     public void wszystkie_atrakcje_restart(int liczba_atrakcji) {
-        wszystkie_atrakcje = null;
+        wszystkie_atrakcje = new ArrayList<>();
         for (int i = 0; i < liczba_atrakcji; i++) {
             wszystkie_atrakcje.add(i);
         }
@@ -132,5 +137,21 @@ public class Ant {
         }
     }
 
+    public void printArray(ArrayList<Integer> lista){
+        System.out.print(" - Scieżka ");
+        for (Object a :
+                lista) {
+            System.out.print(a + " ");
+        }
+    }
+
+
+    public void wyswietl_sciezka(){
+        System.out.print(" - Scieżka ");
+        for (Object atrakcja :
+                odwiedzone_atrakcje) {
+            System.out.print(atrakcja + " ");
+        }
+    }
 
 }

@@ -5,5 +5,5 @@ public class Main {
         AntColonyOptimalization kolonia = new AntColonyOptimalization();
         kolonia.rozwiaz();
 
-
+    }
 }

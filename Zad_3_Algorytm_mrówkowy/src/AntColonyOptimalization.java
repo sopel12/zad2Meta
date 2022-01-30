@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AntColonyOptimalization {
     // atrakcje
@@ -22,13 +23,13 @@ public class AntColonyOptimalization {
     double prop = 0.3;          //    prawdopodobieństwo wyboru przez mrówkę losowej atrakcji: 0,3
     double alfa = 4;           //    waga feromonów na potrzeby wyboru ścieżki przez mrówki α=4
     double beta = 7;            //    waga heurystyki na potrzeby wyboru ścieżki przez mrówkę β=7
-    int liczba_iteracji = 1000;      //    liczba iteracji: 1000
+    int liczba_iteracji = 10;      //    liczba iteracji: 1000
     double tempo_parowania = 0.4;   //    współczynnik wyparowywania feromonów: 0,4
     double mnoznik_liczby_mrowek = 0.5;      //    współczynnik liczby mrówek w kolonii na podstawie liczby atrakcji: 0,5
 
     ArrayList<Ant> populacja_mrowek = null;
 
-    public void printD(){
+    private void printD(){
         for (int i = 0; i < d[0].length; i++)
             for (int j = 0; j < d.length; j++)
                 System.out.println("arr[" + i + "][" + j + "] = " + d[i][j]);
@@ -36,7 +37,7 @@ public class AntColonyOptimalization {
 
 
     //done
-  public ArrayList<Ant>  konfiguruj_mrowki(int liczba_atrakcji, double mnoznik_liczby_mrowek){
+    private ArrayList<Ant>  konfiguruj_mrowki(int liczba_atrakcji, double mnoznik_liczby_mrowek){
 //    niech liczba_mrówek równa się zaokrąglij(liczba_mrówek * mnoznik_liczby_mrowek)
       int liczba_mrowek = (int) (liczba_atrakcji * mnoznik_liczby_mrowek);
 //    niech kolonia_mrówek równa się pustej tablicy
@@ -51,37 +52,38 @@ public class AntColonyOptimalization {
   }
 
     //done
-    public ArrayList<Ant>  konfiguruj_mrowki(double mnoznik_liczby_mrowek){
-//    niech liczba_mrówek równa się zaokrąglij(liczba_mrówek * mnoznik_liczby_mrowek)
-        int liczba_mrowek = (int) (liczba_atrakcji * mnoznik_liczby_mrowek);
-//    niech kolonia_mrówek równa się pustej tablicy
-        ArrayList<Ant> kolonia_mrowek = new ArrayList<Ant>();
-//    dla i z przedziału(0, liczba_mrowek):
-        for (int i = 0; i < liczba_mrowek; i++) {
-            kolonia_mrowek.add(new Ant());
-//        dodaj nową Mrówka do kolonia_mrówek
+    private ArrayList<Ant>  konfiguruj_mrowki(double mnoznik_liczby_mrowek){
+        int liczba_mrowek = (int) (liczba_atrakcji * mnoznik_liczby_mrowek);//    niech liczba_mrówek równa się zaokrąglij(liczba_mrówek * mnoznik_liczby_mrowek)
+        ArrayList<Ant> kolonia_mrowek = new ArrayList<Ant>();//    niech kolonia_mrówek równa się pustej tablicy
+//        System.out.println("Liczba mrówek w koloni: " + liczba_mrowek);
+        for (int i = 0; i < liczba_mrowek; i++) {//    dla i z przedziału(0, liczba_mrowek):
+            kolonia_mrowek.add(new Ant());//        dodaj nową Mrówka do kolonia_mrówek
         }
-//    zwróć kolonia_mrówek
-        return kolonia_mrowek;
+        System.out.println("Liczba mrówek w koloni: " + kolonia_mrowek.size());
+        return kolonia_mrowek;//    zwróć kolonia_mrówek
     }
 
 //done
-    public void aktualizuj_feromony(double tempo_parowania, double[][] slady_feromonowe,int liczba_atrakcji){
+    private void aktualizuj_feromony(double tempo_parowania, double[][] slady_feromonowe,int liczba_atrakcji){
 //    dla x z przedział(0, liczba_atrakcji):
 //        dla y w przedział(0, liczba_atrakcji):
+        print2D(slady_feromonowe);
         for (int x = 0; x < liczba_atrakcji; x++) {
             for (int y = 0; y < liczba_atrakcji; y++) {
-                slady_feromonowe[x][y] = slady_feromonowe[x][y] * tempo_parowania;
+                System.out.println(slady_feromonowe[x][y] );
+                slady_feromonowe[x][y] = Math.round(slady_feromonowe[x][y] * tempo_parowania * 100.0) / 100.0;
+                System.out.println(slady_feromonowe[x][y] );
             //    niech ślady_fermonowe[x][y] równa się     ślady_feromonowe[x][y] * tempo_parowania
             //    dla mrówka z kolonia_mrówek:
                 for (Ant mrowka: populacja_mrowek) {
-                    slady_feromonowe[x][y] += 1 / mrowka.pobierz_przebyta_droge(d);
+                    slady_feromonowe[x][y] += 1.0 / mrowka.pobierz_przebyta_droge(d);
                 }
             }
         }
+        print2D(slady_feromonowe);
     }
 
-    public Ant pobierz_najlepszą(ArrayList<Ant>  populacja_mrowek, Ant poprzenia_najlepsza_mrowka){
+    private Ant pobierz_najlepszą(ArrayList<Ant>  populacja_mrowek, Ant poprzenia_najlepsza_mrowka){
         Ant najlepsza_mrowka = poprzenia_najlepsza_mrowka;//niech najlepsza_mrówka równa się poprzednia_najlepsza_mrówka
         for (Ant mrowka: populacja_mrowek) {//dla mrówka z populacja_mrówek:
             double przebyta_odległosc = mrowka.pobierz_przebyta_droge(d);//    niech przebyta_odległość równa się mrówka.pobierz_przebytą_odległość()
@@ -106,14 +108,18 @@ public class AntColonyOptimalization {
 //    public void rozwiaz(int liczba_iteracji, double tempo_parowania, double mnoznik_liczby_mrowek, int liczba_atrakcji){
     public void rozwiaz(){
         slady_feromonowe = konfiuruj_feromony();//niech slady_feromonowe równa się konfiuruj_feromony()
-        Ant najlepsza_mrowka = null; //niech najlepsza_mrówka równa się NIC
-        for (int i = 0; i < liczba_iteracji; i++) {//    dla i z przedziałów(0, liczba_iteracji)
+        Ant najlepsza_mrowka = new Ant(); //niech najlepsza_mrówka równa się NIC
+        for (int i = 1; i <= liczba_iteracji; i++) {//    dla i z przedziałów(0, liczba_iteracji)
+            System.out.println("Iteracja: " + i);
             populacja_mrowek = konfiguruj_mrowki(mnoznik_liczby_mrowek);//       niech kolonia_mrówek równa się konfiguruj_mrówki(mnoznik_liczby_mrowek)
             for (int r = 0; r < liczba_atrakcji - 1; r++) {//        dla r z przedział(0, liczba_atrakcji – 1):
                 przemiesc_mrowki(populacja_mrowek);
             }
+            wyswietl_przebyte_drogi(populacja_mrowek);
             aktualizuj_feromony(tempo_parowania, slady_feromonowe, liczba_atrakcji);
             najlepsza_mrowka = pobierz_najlepszą(populacja_mrowek,najlepsza_mrowka);//niech najlepsza_mrówka równa się pobierz_najlepszą(kolonia_mrowek);
+            System.out.println(" najlepsza droga " + najlepsza_mrowka.pobierz_przebyta_droge(d));
+
         }
     }
 
@@ -123,4 +129,19 @@ public class AntColonyOptimalization {
         }
     }
 
+    private void wyswietl_przebyte_drogi(ArrayList<Ant> populacja_mrowek) {
+        for (Ant mrowka : populacja_mrowek) {
+            mrowka.wyswietl_sciezka();
+        }
+    }
+
+    public static void print2D(double mat[][])
+    {
+        // Loop through all rows
+        for (double[] row : mat)
+
+            // converting each row as string
+            // and then printing in a separate line
+            System.out.println(Arrays.toString(row));
+    }
 }
