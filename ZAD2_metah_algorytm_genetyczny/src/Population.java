@@ -112,9 +112,9 @@ public class Population {
             // TODO: 27.11.2021 prio:2 zapisywanie do pliku wyniku
             printPopulation();
 
-            chartData[0][i-1] = Double.parseDouble(population[population_size][2]);  // sum
-            chartData[1][i-1] = Double.parseDouble(population[population_size+1][2]);// mean
-            chartData[2][i-1] = Double.parseDouble(population[population_size+2][2]);// max_value
+//            chartData[0][i-1] = Double.parseDouble(population[population_size][2]);  // sum
+//            chartData[1][i-1] = Double.parseDouble(population[population_size+1][2]);// mean
+//            chartData[2][i-1] = Double.parseDouble(population[population_size+2][2]);// max_value
         }
     }
 
@@ -545,8 +545,8 @@ public class Population {
     }
 
     private double function(double x){
-        return x*x;
-//        return x*x + x - 2.0;
+//        return x*x;
+        return x*x + x - 2.0;
 //        return x*x*Math.sin(15*Math.PI*x)+1;
     }
     private double function(int x){
