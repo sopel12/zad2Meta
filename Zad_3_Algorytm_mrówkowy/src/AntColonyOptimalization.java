@@ -25,7 +25,7 @@ public class AntColonyOptimalization {
     double prop = 0.3;          //    prawdopodobieństwo wyboru przez mrówkę losowej atrakcji: 0,3
     int alfa = 4;           //    waga feromonów na potrzeby wyboru ścieżki przez mrówki α=4
     int beta = 7;            //    waga heurystyki na potrzeby wyboru ścieżki przez mrówkę β=7
-    int liczba_iteracji = 10;      //    liczba iteracji: 1000
+    int liczba_iteracji = 2;      //    liczba iteracji: 1000
     double tempo_parowania = 0.4;   //    współczynnik wyparowywania feromonów: 0,4
     double mnoznik_liczby_mrowek = 0.5;      //    współczynnik liczby mrówek w kolonii na podstawie liczby atrakcji: 0,5
 
@@ -58,6 +58,7 @@ public class AntColonyOptimalization {
         int liczba_mrowek = (int) (liczba_atrakcji * mnoznik_liczby_mrowek);//    niech liczba_mrówek równa się zaokrąglij(liczba_mrówek * mnoznik_liczby_mrowek)
         ArrayList<Ant> kolonia_mrowek = new ArrayList<Ant>();//    niech kolonia_mrówek równa się pustej tablicy
 //        System.out.println("Liczba mrówek w koloni: " + liczba_mrowek);
+        kolonia_mrowek = new ArrayList<Ant>();
         for (int i = 0; i < liczba_mrowek; i++) {//    dla i z przedziału(0, liczba_mrowek):
             kolonia_mrowek.add(new Ant());//        dodaj nową Mrówka do kolonia_mrówek
         }
@@ -65,20 +66,24 @@ public class AntColonyOptimalization {
         return kolonia_mrowek;//    zwróć kolonia_mrówek
     }
 
-//done
-    private void aktualizuj_feromony(){
-//    dla x z przedział(0, liczba_atrakcji):
-//        dla y w przedział(0, liczba_atrakcji):
+    //done
+    private void aktualizuj_feromony() {
+    //    dla x z przedział(0, liczba_atrakcji):
+    //        dla y w przedział(0, liczba_atrakcji):
         print2D(slady_feromonowe);
         for (int x = 0; x < liczba_atrakcji; x++) {
             for (int y = 0; y < liczba_atrakcji; y++) {
-                System.out.println(slady_feromonowe[x][y] );
-//                slady_feromonowe[x][y] =  Math.round(slady_feromonowe[x][y] * tempo_parowania * 1000.0) / 1000.0;
-                slady_feromonowe[x][y] =  slady_feromonowe[x][y].multiply(BigDecimal.valueOf(tempo_parowania));
-                System.out.println(" -----  " + slady_feromonowe[x][y] );
-            //    niech ślady_fermonowe[x][y] równa się     ślady_feromonowe[x][y] * tempo_parowania
-            //    dla mrówka z kolonia_mrówek:
-                for (Ant mrowka: populacja_mrowek) {
+                System.out.println(slady_feromonowe[x][y]);
+    //                slady_feromonowe[x][y] =  Math.round(slady_feromonowe[x][y] * tempo_parowania * 1000.0) / 1000.0;
+                slady_feromonowe[x][y] = slady_feromonowe[x][y].multiply(BigDecimal.valueOf(tempo_parowania));
+                System.out.println(" -----  " + slady_feromonowe[x][y]);
+                //    niech ślady_fermonowe[x][y] równa się     ślady_feromonowe[x][y] * tempo_parowania
+                //    dla mrówka z kolonia_mrówek:
+                for (Ant mrowka : populacja_mrowek) {
+                    System.out.println("mrówka przebyta droga " + mrowka.pobierz_przebyta_droge(d));
+                    for (Integer a : mrowka.odwiedzone_atrakcje) {
+                        System.out.println("odwiedzona atrakcja feromon " + a);
+                    }
                     slady_feromonowe[x][y] = slady_feromonowe[x][y].add(BigDecimal.valueOf(mrowka.pobierz_przebyta_droge(d)));
                 }
             }
@@ -113,7 +118,7 @@ public class AntColonyOptimalization {
         slady_feromonowe = konfiuruj_feromony();//niech slady_feromonowe równa się konfiuruj_feromony()
         Ant najlepsza_mrowka = new Ant(); //niech najlepsza_mrówka równa się NIC
         for (int i = 1; i <= liczba_iteracji; i++) {//    dla i z przedziałów(0, liczba_iteracji)
-            System.out.println("Iteracja: " + i);
+            System.out.println("-------------- Iteracja: " + i);
             populacja_mrowek = konfiguruj_mrowki(mnoznik_liczby_mrowek);//       niech kolonia_mrówek równa się konfiguruj_mrówki(mnoznik_liczby_mrowek)
             for (int r = 0; r < liczba_atrakcji - 1; r++) {//        dla r z przedział(0, liczba_atrakcji – 1):
                 przemiesc_mrowki(populacja_mrowek);
