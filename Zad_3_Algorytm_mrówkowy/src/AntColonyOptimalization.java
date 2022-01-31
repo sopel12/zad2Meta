@@ -1,7 +1,9 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AntColonyOptimalization {
+    int liczba_atrakcji = 6;
     // atrakcje
     int[][] d = //
              {{0,  8, 7,  4,  6, 4}
@@ -11,18 +13,18 @@ public class AntColonyOptimalization {
             , {6, 11, 6,  5,  0, 3}
             , {4,  5, 7,  6,  3, 0 }};
 //    feromony
-    double[][] slady_feromonowe = //
-             {{1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}};
-    
-    int liczba_atrakcji = 6;
+    BigDecimal[][] slady_feromonowe = new BigDecimal[liczba_atrakcji][liczba_atrakcji]//
+//             {{1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
+//            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
+//            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
+//            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
+//            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
+//            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}}
+        ;
+
     double prop = 0.3;          //    prawdopodobieństwo wyboru przez mrówkę losowej atrakcji: 0,3
-    double alfa = 4;           //    waga feromonów na potrzeby wyboru ścieżki przez mrówki α=4
-    double beta = 7;            //    waga heurystyki na potrzeby wyboru ścieżki przez mrówkę β=7
+    int alfa = 4;           //    waga feromonów na potrzeby wyboru ścieżki przez mrówki α=4
+    int beta = 7;            //    waga heurystyki na potrzeby wyboru ścieżki przez mrówkę β=7
     int liczba_iteracji = 10;      //    liczba iteracji: 1000
     double tempo_parowania = 0.4;   //    współczynnik wyparowywania feromonów: 0,4
     double mnoznik_liczby_mrowek = 0.5;      //    współczynnik liczby mrówek w kolonii na podstawie liczby atrakcji: 0,5
@@ -64,19 +66,20 @@ public class AntColonyOptimalization {
     }
 
 //done
-    private void aktualizuj_feromony(double tempo_parowania, double[][] slady_feromonowe,int liczba_atrakcji){
+    private void aktualizuj_feromony(){
 //    dla x z przedział(0, liczba_atrakcji):
 //        dla y w przedział(0, liczba_atrakcji):
         print2D(slady_feromonowe);
         for (int x = 0; x < liczba_atrakcji; x++) {
             for (int y = 0; y < liczba_atrakcji; y++) {
                 System.out.println(slady_feromonowe[x][y] );
-                slady_feromonowe[x][y] = Math.round(slady_feromonowe[x][y] * tempo_parowania * 100.0) / 100.0;
-                System.out.println(slady_feromonowe[x][y] );
+//                slady_feromonowe[x][y] =  Math.round(slady_feromonowe[x][y] * tempo_parowania * 1000.0) / 1000.0;
+                slady_feromonowe[x][y] =  slady_feromonowe[x][y].multiply(BigDecimal.valueOf(tempo_parowania));
+                System.out.println(" -----  " + slady_feromonowe[x][y] );
             //    niech ślady_fermonowe[x][y] równa się     ślady_feromonowe[x][y] * tempo_parowania
             //    dla mrówka z kolonia_mrówek:
                 for (Ant mrowka: populacja_mrowek) {
-                    slady_feromonowe[x][y] += 1.0 / mrowka.pobierz_przebyta_droge(d);
+                    slady_feromonowe[x][y] = slady_feromonowe[x][y].add(BigDecimal.valueOf(mrowka.pobierz_przebyta_droge(d)));
                 }
             }
         }
@@ -95,11 +98,11 @@ public class AntColonyOptimalization {
     }
 
     //done
-    private double[][] konfiuruj_feromony() {
-        double[][] reset_feromonow = new double[liczba_atrakcji][liczba_atrakcji];
+    private BigDecimal[][] konfiuruj_feromony() {
+        BigDecimal[][] reset_feromonow = new BigDecimal[liczba_atrakcji][liczba_atrakcji];
         for (int i = 0; i < liczba_atrakcji; i++) {
             for (int j = 0; j < liczba_atrakcji; j++) {
-                reset_feromonow[i][j] = 1.0;
+                reset_feromonow[i][j] = BigDecimal.valueOf(1.0);
             }
         }
         return reset_feromonow;
@@ -116,7 +119,7 @@ public class AntColonyOptimalization {
                 przemiesc_mrowki(populacja_mrowek);
             }
             wyswietl_przebyte_drogi(populacja_mrowek);
-            aktualizuj_feromony(tempo_parowania, slady_feromonowe, liczba_atrakcji);
+            aktualizuj_feromony();
             najlepsza_mrowka = pobierz_najlepszą(populacja_mrowek,najlepsza_mrowka);//niech najlepsza_mrówka równa się pobierz_najlepszą(kolonia_mrowek);
             System.out.println(" najlepsza droga " + najlepsza_mrowka.pobierz_przebyta_droge(d));
 
@@ -135,10 +138,10 @@ public class AntColonyOptimalization {
         }
     }
 
-    public static void print2D(double mat[][])
+    public static void print2D(BigDecimal  mat[][])
     {
         // Loop through all rows
-        for (double[] row : mat)
+        for (BigDecimal [] row : mat)
 
             // converting each row as string
             // and then printing in a separate line
