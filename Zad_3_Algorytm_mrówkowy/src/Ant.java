@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
@@ -9,6 +10,7 @@ public class Ant {
     ArrayList<BigDecimal> uzywane_prawdopodobienstwa = null;
     ArrayList<Integer> uzywane_indeksy = null;
     ArrayList<Integer> dostepne_atrakcje = null;
+    MathContext _mathContext = new MathContext(4, MathContext.DECIMAL32.getRoundingMode());
 //    Ant(){
 //        wszystkie_atrakcje_restart();
 //    };
@@ -22,9 +24,11 @@ public class Ant {
         if(odwiedzone_atrakcje.size() != 0) {
             odwiedź_atrakcje_probabilistycznie(slady_feromonowe, liczba_atrakcji, mrowka, alfa, beta, d);
             odwiedzone_atrakcje.add(selekcja_ruletkowa());
-        }else{
-            odwiedź_losową_atrakcję(liczba_atrakcji);
         }
+//        else{
+//            odwiedź_losową_atrakcję(liczba_atrakcji);
+//            System.out.println("++++++++++++++++++++++++++++++++++++++++++++");
+//        }
 //        printArray(odwiedzone_atrakcje);
     }
 
@@ -52,13 +56,13 @@ public class Ant {
         BigDecimal suma_prawdopodobienstw = BigDecimal.valueOf(0.0);//        niech suma_prawdopodobieństw równa się 0
         for (Integer atrakcja: dostepne_atrakcje) {//        dla atrakcja z dostępne_atrakcje:
             uzywane_indeksy.add(atrakcja);//        dodaj atrakcja do używane_indeksy
-            BigDecimal feromony_na_sciezce = slady_feromonowe[aktualna_atrakcja][atrakcja].pow( alfa);//        niech feromony_na_ścieżce równa się bibl_mat.potęga(slady_feromonowe[aktualna_atrakcja][atrakcja], alfa)
+            BigDecimal feromony_na_sciezce = slady_feromonowe[aktualna_atrakcja][atrakcja].pow( alfa,_mathContext);//        niech feromony_na_ścieżce równa się bibl_mat.potęga(slady_feromonowe[aktualna_atrakcja][atrakcja], alfa)
 //            System.out.println("[aktualna_atrakcja][atrakcja] " + aktualna_atrakcja + " " + atrakcja);
 //            System.out.println("slady_feromonowe[aktualna_atrakcja][atrakcja] " + slady_feromonowe[aktualna_atrakcja][atrakcja]);
 //            System.out.println("feromony_na_sciezce " + feromony_na_sciezce);
-            BigDecimal heurystyka_dla_sciezki = BigDecimal.valueOf(1.0/d[aktualna_atrakcja][atrakcja]).pow(beta);//        niech heurystyka_dla_ścieżki równa się bibl_mat.potęga(1/odległość_między_atrakcjami[aktualna_atrakcja][atrakcja], beta)
+            BigDecimal heurystyka_dla_sciezki = BigDecimal.valueOf(1.0/d[aktualna_atrakcja][atrakcja]).pow(beta,_mathContext);//        niech heurystyka_dla_ścieżki równa się bibl_mat.potęga(1/odległość_między_atrakcjami[aktualna_atrakcja][atrakcja], beta)
 //            System.out.println("heurystyka_dla_sciezki " + heurystyka_dla_sciezki);
-            BigDecimal prawdopodobienstwo = feromony_na_sciezce.multiply(heurystyka_dla_sciezki);//        niech prawdopodobieństwo równa się feromony_na_ścieżce * hesurystyka_dla ścieżki
+            BigDecimal prawdopodobienstwo = feromony_na_sciezce.multiply(heurystyka_dla_sciezki,_mathContext);//        niech prawdopodobieństwo równa się feromony_na_ścieżce * hesurystyka_dla ścieżki
 //            System.out.println("prawdopodobienstwo " + prawdopodobienstwo);
             uzywane_prawdopodobienstwo.add(prawdopodobienstwo);//        dodaj prawdopodobieństwo do używane_prawdopodobieństwa
         }
