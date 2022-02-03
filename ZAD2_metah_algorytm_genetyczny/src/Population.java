@@ -1,3 +1,5 @@
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -11,8 +13,8 @@ public class Population {
     double prop_cross = 1;
     int gen_size = 5;
     int max_gen = gen_size;
-    double precision = 1;
-    int min;
+    static double precision = 1;
+    static int min;
     int max;
     String[][] population;
     String[][] new_population;
@@ -20,10 +22,11 @@ public class Population {
     double sum;
     double max_value;
     int columns = 15;
-
+    int f_number = 0;
     //chart
     double[][] chartData;
-
+    static DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+    static DecimalFormat df = new DecimalFormat("0.0000");//df.format()
     /*
     [0]x
     [1]f(x)
@@ -38,11 +41,11 @@ public class Population {
 
      */
 
-    public Population(int population_size, double mutation, double prop_cross, int gen_size, int min,int max,double precision) {
+    public Population(int population_size, double mutation, double prop_cross, int gen_size, int min,int max,double precision, int f_number) {
         this.population_size = population_size;
         this.mutation = mutation;
         this.prop_cross = prop_cross;
-        this.gen_size = gen_size;
+        this.gen_size = 31;
         this.min = min;
         this.max = max;
         this.population = new String[population_size+3][columns];
@@ -50,6 +53,7 @@ public class Population {
         this.precision = precision;
         setGenSize();
         this.chartData = new double[3][gen_size];
+        this.f_number = f_number;
 
 //        population[population_size][1] = "sum";
 //        population[population_size+1][1] = "mean";
@@ -76,6 +80,10 @@ public class Population {
             for (int j = 0; j < population_size; j++) {
                 population[j][0] = new_population[j][0];
             }
+//            maxInColumn(0,population);
+//            meanInColumn(0,population);
+
+
 
             population[population_size][1] = "sum";
             population[population_size+1][1] = "mean";
@@ -106,11 +114,15 @@ public class Population {
             interbreedingProbability();//[9]
             interbreeding();//[10]
             mutation();//[11]
-            fit();//[12]
-            // TODO: 27.11.2021 prio:1 powtarzanie generacji
-            // TODO: 27.11.2021 prio:1 dodac stop do generacji
-            // TODO: 27.11.2021 prio:2 zapisywanie do pliku wyniku
+//            fit();//[12]
             printPopulation();
+
+//            System.out.println("mean sum " + population[5][12]);
+            System.out.println("mean sum " + maxInColumn(12,population));
+            System.out.println("mean length " + meanInColumn(12,population));
+
+            line_chart_dataset.addValue( maxInColumn(12,population) , "max" , String.valueOf(i));
+            line_chart_dataset.addValue( meanInColumn(12,population) , "mean" , String.valueOf(i));
 
 //            chartData[0][i-1] = Double.parseDouble(population[population_size][2]);  // sum
 //            chartData[1][i-1] = Double.parseDouble(population[population_size+1][2]);// mean
@@ -139,7 +151,8 @@ public class Population {
         mean = 0;
         max_value = 0;
         for (int i = 0; i < population_size; i++) {
-            double f = function(toXdouble(population[i][0]));
+//            double f = function(toXdouble(population[i][0]));
+            double f = function(toXdouble(population[i][0]), f_number);
 //            double f = function(Integer.parseInt(population[i][0]));
 //            double f = function1(Integer.parseInt(population[i][0]));
 //            double f = function2(Integer.parseInt(population[i][0]));
@@ -162,7 +175,7 @@ public class Population {
         mean = 0;
         max_value = 0;
         for (int i = 0; i < population_size; i++) {
-            double f = function(toXdouble(population[i][from]));
+            double f = function(toXdouble(population[i][from]), f_number);
 //            double f = function(Integer.parseInt(population[i][0]));
 //            double f = function1(Integer.parseInt(population[i][0]));
 //            double f = function2(Integer.parseInt(population[i][0]));
@@ -351,7 +364,7 @@ public class Population {
 
     public void printPopulation(){
 
-        DecimalFormat df = new DecimalFormat("0.0000");//df.format()
+
         df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 //        String format = "%3s%14s%5s%22s%22s%25s%25s%25s%12s%15s%15s%22s%23s%25s%22s%15s";
         String format = "%3s%10s%11s%12s%15s%15s%12s%12s%12s%15s%15s%21s%23s%19s%18s%15s%15s%15s";
@@ -427,9 +440,21 @@ public class Population {
         }
         System.out.println();
     }
+//    private void setGenSize(){
+//        if(gen_size==0){
+//            int new_gen_size =  (int)( (this.max-this.min)/this.precision);
+//            this.max_gen = new_gen_size;
+//            System.out.println("Gen size max value: " + new_gen_size);
+//            String s = Integer.toBinaryString(new_gen_size);
+//            System.out.println("Gen size bin: " + s);
+//            System.out.println("Gen size bin length: " + s.length());
+//            this.gen_size = s.length();
+//        }
+//    }
+
     private void setGenSize(){
         if(gen_size==0){
-            int new_gen_size =  (int)( (this.max-this.min)/this.precision);
+            int new_gen_size =  31;
             this.max_gen = new_gen_size;
             System.out.println("Gen size max value: " + new_gen_size);
             String s = Integer.toBinaryString(new_gen_size);
@@ -544,14 +569,20 @@ public class Population {
         return "";
     }
 
-    private double function(double x){
+//    private double function(double x){
+////        return x*x;
+//        return x*x + x - 2.0;
+////        return x*x*Math.sin(15*Math.PI*x)+1;
+//    }
+    private double function(double x, int option){
 //        return x*x;
-        return x*x + x - 2.0;
-//        return x*x*Math.sin(15*Math.PI*x)+1;
-    }
-    private double function(int x){
-//        return x*x;
-        return x*x+x-2;
+        double wynik = x*x;
+        if (option == 1) {
+            wynik = x*x+x-2;
+        } else if (option == 2){
+            wynik = x*x*Math.sin(15*Math.PI*x)+1;
+        }
+        return wynik;
 //        return x*x*Math.sin(15*Math.PI*x)+1;
     }
 
@@ -567,12 +598,12 @@ public class Population {
     }
 
     private String toX(String x){
-        String x_prec = Double.toString((Double.parseDouble(x)*precision) + min );
+        String x_prec = Double.toString((Double.parseDouble(x)*(this.max-this.min/this.max_gen)) + min );
         return x_prec;
     }
 
     private double toXdouble(String x){
-        double x_prec = (Double.parseDouble(x)*precision) + (double)min ;
+        double x_prec = (Double.parseDouble(x)*(this.max-this.min/this.max_gen)) + (double)min ;
         return x_prec;
     }
 
@@ -636,6 +667,35 @@ public class Population {
     }
 
     public void plotChart(){
+    }
+
+    public  double maxInColumn(int col, String[][] arr)
+    {
+            double maxm = toXdouble(arr[0][col]);
+            for (int j = 1; j < population_size; j++){
+                if (toXdouble(arr[j][col]) > maxm)
+                    maxm = toXdouble(arr[j][col]);
+
+//            System.out.println(maxm);
+        }
+            return maxm;
+    }
+
+
+    public  double meanInColumn(int col, String[][] arr)
+    {
+//        for (int i = 0; i < cols; i++) {
+            // Initialize max to 0 at beginning
+            // of finding max element of each column
+//            int maxm = arr[0][i];
+            double sum = 0.0;
+            for (int i  = 0; i < population_size; i++)
+//                if (Double.parseDouble(toX(arr[col][0])) > maxm)
+                sum += toXdouble(arr[i][col]);
+//            System.out.println("mean sum " + sum);
+//            System.out.println("mean length " + arr[col].length);
+//        }
+        return sum/arr[col].length;
     }
 
 }
