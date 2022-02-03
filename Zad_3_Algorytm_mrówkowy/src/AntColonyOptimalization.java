@@ -1,7 +1,9 @@
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class AntColonyOptimalization {
     int liczba_atrakcji = 6;
@@ -14,7 +16,8 @@ public class AntColonyOptimalization {
             , {6, 11, 6,  5,  0, 3}
             , {4,  5, 7,  6,  3, 0 }};
 //    feromony
-    BigDecimal[][] slady_feromonowe = new BigDecimal[liczba_atrakcji][liczba_atrakcji]//
+//    BigDecimal[][] slady_feromonowe = new BigDecimal[liczba_atrakcji][liczba_atrakcji]//
+    double[][] slady_feromonowe = new double[liczba_atrakcji][liczba_atrakcji]//
 //             {{1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
 //            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
 //            , {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
@@ -71,16 +74,49 @@ public class AntColonyOptimalization {
         return kolonia_mrowek;//    zwróć kolonia_mrówek
     }
 
+    //BigDecimal
+//    private void aktualizuj_feromony( int i) {
+//        //    dla x z przedział(0, liczba_atrakcji):
+//        //        dla y w przedział(0, liczba_atrakcji):
+//        print2D(slady_feromonowe);
+//        for (int x = 0; x < liczba_atrakcji; x++) {
+//            for (int y = 0; y < liczba_atrakcji; y++) {
+//                System.out.println(slady_feromonowe[x][y]);
+//                //                slady_feromonowe[x][y] =  Math.round(slady_feromonowe[x][y] * tempo_parowania * 1000.0) / 1000.0;
+//                slady_feromonowe[x][y] = slady_feromonowe[x][y].multiply(BigDecimal.valueOf(tempo_parowania),_mathContext);
+////                System.out.println(" -----  " + slady_feromonowe[x][y]);
+//                //    niech ślady_fermonowe[x][y] równa się     ślady_feromonowe[x][y] * tempo_parowania
+//                //    dla mrówka z kolonia_mrówek:
+//                for (Ant mrowka : populacja_mrowek) {
+////                    System.out.println("mrówka przebyta droga " + mrowka.pobierz_przebyta_droge(d));
+////                    for (Integer a : mrowka.odwiedzone_atrakcje) {
+////                        System.out.println("odwiedzona atrakcja feromon " + a);
+////
+////                    }
+//                    for (int m = 1; m < liczba_atrakcji; m++) {
+//                        int atrakcja1 = mrowka.odwiedzone_atrakcje.get(m);
+//                        int atrakcja2 =mrowka.odwiedzone_atrakcje.get(m-1);
+//                        if((atrakcja1 == x && atrakcja2 == y) || (atrakcja2 == x && atrakcja1 == y)) {
+//                            slady_feromonowe[x][y] = slady_feromonowe[x][y].add(BigDecimal.valueOf(mrowka.pobierz_przebyta_droge(d)));
+//                        }
+//                    }
+////                    slady_feromonowe[x][y] = slady_feromonowe[x][y].add(BigDecimal.valueOf(mrowka.pobierz_przebyta_droge(d)));
+//                }
+//            }
+//        }
+//        print2D(slady_feromonowe);
+//    }
+
     //done
     private void aktualizuj_feromony( int i) {
     //    dla x z przedział(0, liczba_atrakcji):
     //        dla y w przedział(0, liczba_atrakcji):
-        print2D(slady_feromonowe);
+//        print2D(slady_feromonowe);
         for (int x = 0; x < liczba_atrakcji; x++) {
             for (int y = 0; y < liczba_atrakcji; y++) {
-                System.out.println(slady_feromonowe[x][y]);
+//                System.out.println(slady_feromonowe[x][y]);
     //                slady_feromonowe[x][y] =  Math.round(slady_feromonowe[x][y] * tempo_parowania * 1000.0) / 1000.0;
-                slady_feromonowe[x][y] = slady_feromonowe[x][y].multiply(BigDecimal.valueOf(tempo_parowania),_mathContext);
+                slady_feromonowe[x][y] = slady_feromonowe[x][y] * tempo_parowania;
 //                System.out.println(" -----  " + slady_feromonowe[x][y]);
                 //    niech ślady_fermonowe[x][y] równa się     ślady_feromonowe[x][y] * tempo_parowania
                 //    dla mrówka z kolonia_mrówek:
@@ -94,13 +130,14 @@ public class AntColonyOptimalization {
                         int atrakcja1 = mrowka.odwiedzone_atrakcje.get(m);
                         int atrakcja2 =mrowka.odwiedzone_atrakcje.get(m-1);
                         if((atrakcja1 == x && atrakcja2 == y) || (atrakcja2 == x && atrakcja1 == y)) {
-                            slady_feromonowe[x][y] = slady_feromonowe[x][y].add(BigDecimal.valueOf(mrowka.pobierz_przebyta_droge(d)));
+                            slady_feromonowe[x][y] = slady_feromonowe[x][y] + mrowka.pobierz_przebyta_droge(d);
                         }
                     }
 //                    slady_feromonowe[x][y] = slady_feromonowe[x][y].add(BigDecimal.valueOf(mrowka.pobierz_przebyta_droge(d)));
                 }
             }
         }
+
         print2D(slady_feromonowe);
     }
 
@@ -115,12 +152,21 @@ public class AntColonyOptimalization {
 //        return najlepsza_mrowka;//        zwróć najlepsza_mrówka
     }
 
-    //done
-    private BigDecimal[][] konfiuruj_feromony() {
-        BigDecimal[][] reset_feromonow = new BigDecimal[liczba_atrakcji][liczba_atrakcji];
+    //done BigDecimal
+//    private BigDecimal[][] konfiuruj_feromony() {
+//        BigDecimal[][] reset_feromonow = new BigDecimal[liczba_atrakcji][liczba_atrakcji];
+//        for (int i = 0; i < liczba_atrakcji; i++) {
+//            for (int j = 0; j < liczba_atrakcji; j++) {
+//                reset_feromonow[i][j] = BigDecimal.valueOf(1.0);
+//            }
+//        }
+//        return reset_feromonow;
+//    }
+    private double[][] konfiuruj_feromony() {
+        double[][] reset_feromonow = new double[liczba_atrakcji][liczba_atrakcji];
         for (int i = 0; i < liczba_atrakcji; i++) {
             for (int j = 0; j < liczba_atrakcji; j++) {
-                reset_feromonow[i][j] = BigDecimal.valueOf(1.0);
+                reset_feromonow[i][j] = 1.0;
             }
         }
         return reset_feromonow;
@@ -155,14 +201,27 @@ public class AntColonyOptimalization {
             mrowka.wyswietl_sciezka();
         }
     }
-
-    public static void print2D(BigDecimal  mat[][])
+    //BigDecimal
+//    public static void print2D(BigDecimal  mat[][])
+//    {
+//        // Loop through all rows
+//        for (BigDecimal [] row : mat)
+//
+//            // converting each row as string
+//            // and then printing in a separate line
+//            System.out.println(Arrays.toString(row));
+//    }
+    public static void print2D(double  mat[][])
     {
+        System.out.println();
+        System.out.println("Ścieżka feromonów:");
+        DecimalFormat df = new DecimalFormat("###.##");
         // Loop through all rows
-        for (BigDecimal [] row : mat)
+        for (double [] row : mat)
 
             // converting each row as string
             // and then printing in a separate line
-            System.out.println(Arrays.toString(row));
+//            System.out.println(Arrays.toString(row));
+            System.out.println("[" + Arrays.stream(row).mapToObj(df::format).collect(Collectors.joining(" ")) + "]");
     }
 }
